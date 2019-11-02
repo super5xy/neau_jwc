@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.ssm.dao.ICourseDao">
+    <resultMap id="findAllStudentOfCourse" type="course">
+        <id property="id" column="id"></id>
+        <result property="name" column="cname"></result>
+
+
+        <collection property="students" ofType="student">
+            <result property="name" column="sname"></result>
+            <result property="stuid" column="stuid"></result>
+        </collection>
+    </resultMap>
+
+<select id="findAllStudentOfCourse" resultMap="findAllStudentOfCourse">
+SELECT c.id,c.name cname,s.name sname,s.stuid FROM course c LEFT JOIN s_c sc ON c.id=sc.cid LEFT JOIN student s ON s.id=sc.sid
+</select>
+</mapper>

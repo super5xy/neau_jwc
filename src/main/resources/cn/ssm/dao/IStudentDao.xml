@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.ssm.dao.IStudentDao">
+    <resultMap id="findStudentCourse" type="student">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="stuid" column="stuid"></result>
+
+        <collection property="courses" ofType="course">
+            <id property="id" column="cid"></id>
+            <result property="name" column="cname"></result>
+        </collection>
+    </resultMap>
+
+    <select id="findStudentByStuidAndPassowrd" parameterType="student" resultType="student">
+        select * from student
+        <where>
+            <if test="stuid!=null">
+                and stuid=#{stuid}
+            </if>
+            <if test="password!=null">
+                and password =#{password}
+            </if>
+            <if test="id!=null">
+                and id =#{id}
+            </if>
+        </where>
+    </select>
+    <insert id="saveStudent" parameterType="student">
+          insert into student (name,password,stuid,gender,birthday) values (#{name},#{password},#{stuid},#{gender},#{birthday})
+    </insert>
+
+    <select id="findAllStudent" resultType="student" parameterType="int">
+        select * from student where not id=#{id}
+    </select>
+
+    <select id="findStudentCourse" resultMap="findStudentCourse" parameterType="int">
+        SELECT s.id,s.name,s.stuid,c.id cid,c.name cname FROM course c,student s,s_c sc
+        WHERE c.id=sc.cid AND s.id=sc.sid AND s.id=#{id}
+    </select>
+
+    <insert id="saveCourse">
+        insert into s_c values (#{sid},#{cid})
+    </insert>
+
+
+<!--    <insert id="saveCourse">-->
+<!--        insert into s_c values-->
+
+<!--        <foreach collection="array" item="cid" open="(" separator="," close=")">-->
+<!--            (#{sid},#{cid}),-->
+<!--    </foreach>-->
+<!--    </insert>-->
+
+
+    <delete id="deleteCourse">
+        delete from s_c where sid=#{sid} and cid=#{cid}
+    </delete>
+
+    <select id="findAllCourse" parameterType="int" resultType="course">
+        SELECT * FROM course WHERE NOT id in(SELECT c.id
+         FROM course c,student s,s_c sc WHERE c.id=sc.cid AND s.id=sc.sid AND s.id=#{zhanweifu})
+
+    </select>
+    <select id="findOneStudentById" parameterType="int" resultType="student">
+        SELECT * FROM student where id =#{id}
+
+    </select>
+
+    <update id="updateStudent" parameterType="student">
+        update student set stuid=#{stuid},name=#{name},gender=#{gender},birthday=#{birthday},sign=#{sign} where id=#{id}
+
+    </update>
+    <update id="updateStudentPassword" parameterType="student">
+        update student set password=#{password} where id=#{id}
+
+    </update>
+    <update id="updateStudentFace" parameterType="student">
+        update student set filename=#{filename} where id=#{id}
+
+    </update>
+
+</mapper>
