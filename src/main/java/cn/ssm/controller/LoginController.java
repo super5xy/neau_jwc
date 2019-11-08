@@ -39,7 +39,7 @@ public class LoginController {
 			session.setAttribute("id", findStudent.getId());
 			session.setAttribute("name", findStudent.getName());
 
-			session.setAttribute("face",findStudent.getFilename());
+			session.setAttribute("face", findStudent.getFilename());
 
 			//重定向到选课页面
 			return "redirect:jwc";
@@ -53,22 +53,23 @@ public class LoginController {
 	@RequestMapping("logout")
 	public String logout(HttpSession session, Model model) throws MyException {
 
-		session.invalidate();
+//		session.invalidate();
+		session.removeAttribute("id");
 
 		model.addAttribute("loginMsg", "已退出登录");
 		return "forward:login.jsp";
 	}
 
 	@RequestMapping("register")
-	public String register(Student student, Model model,HttpSession session,String captcha) throws MyException {
+	public String register(Student student, Model model, HttpSession session, String captcha) throws MyException {
 
 //		System.out.println(student);
 		String sessionCaptcha = (String) session.getAttribute("captcha");
-		if (captcha==null||captcha.length()<=0){
+		if (captcha == null || captcha.length() <= 0) {
 			model.addAttribute("loginMsg", "请输入验证码");
 			return "forward:register.jsp";
 		}
-		if (!captcha.equalsIgnoreCase(sessionCaptcha)){
+		if (!captcha.equalsIgnoreCase(sessionCaptcha)) {
 			model.addAttribute("loginMsg", "验证码错误");
 			return "forward:register.jsp";
 		}
@@ -119,13 +120,13 @@ public class LoginController {
 
 	//验证码
 	@RequestMapping("getCaptcha")
-	public void captcha(HttpServletRequest request,HttpServletResponse response) throws IOException {
+	public void captcha(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(200, 100);
 
 		String code = lineCaptcha.getCode();
 //		获得验证码,存入session
-		request.getSession().setAttribute("captcha",code);
+		request.getSession().setAttribute("captcha", code);
 		System.out.println(code);
 		ServletOutputStream outputStream = response.getOutputStream();
 		lineCaptcha.write(outputStream);
